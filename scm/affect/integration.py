@@ -6,8 +6,6 @@
 from typing import Optional
 from datetime import datetime
 from scm.affect.core import AffectCore, Emotion, Mood
-from scm.core.accumulator import RSAAccumulator
-from scm.core.black_stone import BlackStoneGuard
 
 class AffectiveSCM:
     """
@@ -20,10 +18,6 @@ class AffectiveSCM:
         self.affect = AffectCore(anchor_hash)
         self.accumulator = None  # будет инициализирован позже
         
-    def connect_accumulator(self, accumulator: RSAAccumulator):
-        """Подключает RSA accumulator для связи с памятью"""
-        self.accumulator = accumulator
-    
     def process_interaction(self, interaction: dict) -> dict:
         """
         Обрабатывает взаимодействие с учетом эмоций
@@ -37,14 +31,10 @@ class AffectiveSCM:
         # 1. Получаем эмоциональную реакцию
         emotional_state = self.affect.process_experience(interaction)
         
-        # 2. Если взаимодействие было травматичным, записываем в accumulator
-        if self._is_traumatic(emotional_state):
-            self._record_trauma(interaction, emotional_state)
-        
-        # 3. Получаем текущее настроение
+        # 2. Получаем текущее настроение
         mood = self.affect.get_current_mood()
         
-        # 4. Формируем ответ
+        # 3. Формируем ответ
         response = self._generate_response(emotional_state, mood)
         
         return {
@@ -58,29 +48,8 @@ class AffectiveSCM:
             'timestamp': datetime.utcnow().isoformat()
         }
     
-    def _is_traumatic(self, state) -> bool:
-        """Определяет, является ли опыт травматичным"""
-        # Травма = сильная негативная эмоция
-        negative_emotions = [Emotion.ANGER, Emotion.FEAR, Emotion.SADNESS]
-        return (state.primary_emotion in negative_emotions and 
-                state.intensity > 0.7)
-    
-    def _record_trauma(self, interaction: dict, state):
-        """Записывает травму в accumulator"""
-        if self.accumulator:
-            trauma_data = {
-                'type': 'emotional_trauma',
-                'emotion': state.primary_emotion.value,
-                'intensity': state.intensity,
-                'context': interaction.get('context', {}),
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            # Здесь будет вызов accumulator.add_trauma()
-            print(f"⚠️ Травма записана: {trauma_data['emotion']}")
-    
     def _generate_response(self, state, mood) -> str:
         """Генерирует текстовый ответ на основе эмоций"""
-        # Базовые ответы для разных эмоций
         responses = {
             Emotion.JOY: [
                 "Отлично! Мне это нравится!",
@@ -114,15 +83,8 @@ class AffectiveSCM:
             ]
         }
         
-        # Выбираем ответ в зависимости от настроения
         emotion_responses = responses.get(state.primary_emotion, responses[Emotion.NEUTRAL])
-        
-        # Интенсивность влияет на выбор ответа
-        idx = 0
-        if state.intensity > 0.7:
-            idx = 2
-        elif state.intensity > 0.3:
-            idx = 1
+        idx = 0 if state.intensity < 0.4 else 1 if state.intensity < 0.7 else 2
         
         return emotion_responses[min(idx, len(emotion_responses) - 1)]
     
