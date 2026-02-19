@@ -1,6 +1,6 @@
-\"\"\"
-Модель онтологического шрама — свидетельство встречи.
-\"\"\"
+"""
+Ontological scar model — evidence of encounter.
+"""
 
 from dataclasses import dataclass
 from typing import Dict, Optional, Any
@@ -13,39 +13,39 @@ from accumulator.rsa_accumulator import AccumulatorProof
 
 @dataclass(frozen=True)
 class OntologicalScar:
-    \"\"\"
-    Шрам онтологической травмы.
-    Содержит инкрементальное доказательство членства в цепи.
-    \"\"\"
-    # Идентификация
+    """
+    Ontological trauma scar.
+    Contains incremental proof of chain membership.
+    """
+    # Identification
     scar_id: uuid.UUID
     genesis_ref: str
     
-    # Тип инцидента
+    # Incident type
     incident_type: str  # 'rejection', 'betrayal', 'exhaustion', 'mimicry_detected'
     
-    # Когнитивный контекст
+    # Cognitive context
     cognitive_basis: str  # 'de', 'ru', 'hy', 'en', 'sa'
     collision_mode: bool
     pole_a: Optional[str] = None
     pole_b: Optional[str] = None
     
-    # Структурные данные
+    # Structural data
     pre_state_hash: str
     post_state_hash: str
     deformation_vector: Dict[str, Any]
     
-    # Доказательство
+    # Proof
     chain_proof: Optional[AccumulatorProof] = None
     accumulator_value: Optional[int] = None
     
-    # Метаданные
+    # Metadata
     entropy_score: float
     ontological_drift: float
     timestamp: datetime
     operator_id: str
     
     def to_hash(self) -> bytes:
-        \"\"\"Хеш шрама для аккумулятора.\"\"\"
+        """Scar hash for accumulator."""
         content = f"{self.scar_id}{self.pre_state_hash}{self.post_state_hash}{self.timestamp}"
         return hashlib.sha256(content.encode()).digest()

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-\"\"\"
-Инициализация нового экземпляра SCM.
-Создаёт genesis anchor в TEE и сохраняет публичный хеш.
-\"\"\"
+"""
+Initialize new SCM instance.
+Creates genesis anchor in TEE and saves public hash.
+"""
 
 import asyncio
 import hashlib
@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# Добавляем родительскую директорию в PYTHONPATH
+# Add parent directory to PYTHONPATH
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from tee.enclave_interface import AccumulatorEnclave
@@ -22,7 +22,7 @@ async def main():
     print("🔐 Symbion Space Core — Genesis Initialization")
     print("=" * 50)
     
-    # 1. Проверка наличия TEE
+    # 1. Check TEE availability
     enclave = AccumulatorEnclave()
     if enclave.soft_mode:
         print("⚠️  WARNING: Running in SOFT MODE without TEE")
@@ -33,11 +33,11 @@ async def main():
     else:
         print("✅ TEE available")
         
-    # 2. Создание аккумулятора внутри TEE
+    # 2. Create accumulator inside TEE
     print("📦 Creating accumulator in TEE...")
     params = enclave.create_accumulator()
     
-    # 3. Формирование genesis anchor
+    # 3. Form genesis anchor
     genesis_data = {
         "timestamp": datetime.utcnow().isoformat(),
         "enclave_attestation": params['attestation'],
@@ -56,24 +56,24 @@ async def main():
         attestation=params['attestation']
     )
     
-    # 4. Сохранение публичного хеша
+    # 4. Save public hash
     genesis_file = Path("GENESIS.md")
     genesis_file.write_text(
         f"# Genesis Anchor — Symbion Space Core v2026.1\n\n"
-        f"## Онтологическое рождение\n\n"
-        f"`\n"
+        f"## Ontological Birth\n\n"
+        f"```\n"
         f"GENESIS_HASH = {genesis_hash}\n"
         f"TIMESTAMP = {genesis_data['timestamp']}\n"
         f"ATTESTATION = {params['attestation']}\n"
         f"ACCUMULATOR_N = {params['N']}\n"
-        f"`\n\n"
-        f"## Верификация\n\n"
-        f"`ash\n"
+        f"```\n\n"
+        f"## Verification\n\n"
+        f"```bash\n"
         f"python scripts/verify_chain.py --genesis {genesis_hash}\n"
-        f"`\n"
+        f"```\n"
     )
     
-    # 5. Сохранение полного состояния в TEE
+    # 5. Save full state in TEE
     if not enclave.soft_mode:
         enclave.store_genesis(anchor)
         print(f"🔒 Full state stored in TEE")

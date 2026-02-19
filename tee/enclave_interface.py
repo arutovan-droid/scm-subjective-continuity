@@ -1,15 +1,14 @@
-\"\"\"
-Интерфейс к TEE (Trusted Execution Environment).
-Поддерживает soft-mode для разработки.
-\"\"\"
+"""
+Interface to TEE (Trusted Execution Environment).
+Supports soft-mode for development.
+"""
 
-import os
 import warnings
-from typing import Dict, Optional
+from typing import Dict
 
 
 class AccumulatorEnclave:
-    \"\"\"Интерфейс к TEE с fallback на soft-mode.\"\"\"
+    """Interface to TEE with soft-mode fallback."""
     
     def __init__(self):
         self.soft_mode = not self._check_nitro_available()
@@ -20,15 +19,15 @@ class AccumulatorEnclave:
             )
             
     def _check_nitro_available(self) -> bool:
-        \"\"\"Проверка наличия AWS Nitro Enclaves.\"\"\"
-        # В реальности: проверка /dev/nitro_enclaves
-        # Для тестов возвращаем False
+        """Check for AWS Nitro Enclaves availability."""
+        # In production: check /dev/nitro_enclaves
+        # For tests return False
         return False
         
     def create_accumulator(self) -> Dict:
-        \"\"\"Создаёт новый аккумулятор.\"\"\"
+        """Create new accumulator."""
         if self.soft_mode:
-            # Генерируем локально (НЕБЕЗОПАСНО!)
+            # Generate locally (INSECURE!)
             from Crypto.PublicKey import RSA
             key = RSA.generate(2048)
             return {
@@ -38,15 +37,15 @@ class AccumulatorEnclave:
                 'attestation': 'SOFT_MODE_NO_ATTESTATION'
             }
         else:
-            # В реальности: вызов enclave
+            # In production: call enclave
             return {
-                'N': 12345,  # заглушка
+                'N': 12345,  # stub
                 'g': 65537,
                 'attestation': 'aws-nitro:enclave-12345678'
             }
             
     def store_genesis(self, anchor):
-        \"\"\"Сохраняет genesis в TEE.\"\"\"
+        """Store genesis in TEE."""
         if not self.soft_mode:
-            # Вызов enclave для сохранения
+            # Call enclave to store
             pass

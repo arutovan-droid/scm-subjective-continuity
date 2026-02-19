@@ -1,6 +1,6 @@
-\"\"\"
-Тесты для RSA аккумулятора.
-\"\"\"
+"""
+Tests for RSA accumulator.
+"""
 
 import pytest
 import pytest_asyncio
@@ -14,7 +14,7 @@ from accumulator.incremental_proof import IncrementalChainProof
 
 @pytest_asyncio.fixture
 async def accumulator():
-    \"\"\"Создание аккумулятора для тестов.\"\"\"
+    """Create accumulator for tests."""
     with tempfile.NamedTemporaryFile(suffix='.wal', delete=False) as f:
         wal_path = f.name
     
@@ -28,7 +28,7 @@ async def accumulator():
 
 @pytest.mark.asyncio
 async def test_add_and_verify(accumulator):
-    \"\"\"Тест добавления и верификации.\"\"\"
+    """Test add and verify."""
     element = hashlib.sha256(b"test_element").digest()
     new_value, proof = await accumulator.add(element)
     
@@ -37,7 +37,7 @@ async def test_add_and_verify(accumulator):
 
 @pytest.mark.asyncio
 async def test_batch_verify(accumulator):
-    \"\"\"Тест пакетной верификации.\"\"\"
+    """Test batch verification."""
     proofs = []
     for i in range(10):
         element = hashlib.sha256(f"element_{i}".encode()).digest()
@@ -49,7 +49,7 @@ async def test_batch_verify(accumulator):
 
 @pytest.mark.asyncio
 async def test_incremental_chain():
-    \"\"\"Тест инкрементальной цепочки.\"\"\"
+    """Test incremental chain."""
     with tempfile.NamedTemporaryFile(suffix='.wal', delete=False) as f:
         wal_path = f.name
     
@@ -59,12 +59,12 @@ async def test_incremental_chain():
     )
     await chain.initialize()
     
-    # Добавляем 100 шрамов
+    # Add 100 scars
     for i in range(100):
         scar_hash = hashlib.sha256(f"scar_{i}".encode()).digest()
         proof = await chain.add_scar(scar_hash)
         
-        # Проверяем после каждого добавления
+        # Verify after each add
         assert chain.verify_chain(proof) == True
         
     os.unlink(wal_path)

@@ -1,7 +1,7 @@
-\"\"\"
-Write-Ahead Log для атомарных операций аккумулятора.
-Использует aiofiles для неблокирующей записи.
-\"\"\"
+"""
+Write-Ahead Log for atomic accumulator operations.
+Uses aiofiles for non-blocking writes.
+"""
 
 import os
 import asyncio
@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 class AccumulatorWAL:
-    \"\"\"Write-Ahead Log с async/await поддержкой.\"\"\"
+    """Write-Ahead Log with async/await support."""
     
     def __init__(self, path: str):
         self.path = path
@@ -21,43 +21,43 @@ class AccumulatorWAL:
         self._ensure_file()
         
     def _ensure_file(self):
-        \"\"\"Создаёт файл WAL, если его нет.\"\"\"
+        """Create WAL file if it doesn't exist."""
         if not os.path.exists(self.path):
             with open(self.path, 'w') as f:
                 f.write("# ACCUMULATOR WAL\n")
                 f.write("# seq:operation:value:timestamp:scar_id\n")
                 
     async def initialize_cache(self):
-        \"\"\"Инициализация кэша из WAL при старте.\"\"\"
+        """Initialize cache from WAL on startup."""
         seq, value, _ = await self.recover()
         self._cached_seq = seq
         self._cached_value = value
         
     async def append(self, operation: str, value: int, scar_id: str) -> bool:
-        \"\"\"
-        Атомарная запись операции с async fsync.
-        Использует asyncio.Lock для потокобезопасности.
-        \"\"\"
+        """
+        Atomic write with async fsync.
+        Uses asyncio.Lock for thread safety.
+        """
         async with self._lock:
             timestamp = datetime.utcnow().isoformat()
             self._cached_seq += 1
             entry = f"{self._cached_seq}:{operation}:{value}:{timestamp}:{scar_id}\n"
             
-            # Асинхронная запись
+            # Async write
             async with aiofiles.open(self.path, 'a') as f:
                 await f.write(entry)
                 await f.flush()
-                # fsync в отдельном потоке
+                # fsync in separate thread to avoid blocking event loop
                 await asyncio.to_thread(os.fsync, f.fileno())
             
             self._cached_value = value
             return True
             
     async def recover(self) -> Tuple[int, int, Optional[str]]:
-        \"\"\"
-        Восстановление последнего значения и seq после сбоя.
-        Возвращает (seq, value, last_scar_id)
-        \"\"\"
+        """
+        Recover last value and seq after crash.
+        Returns (seq, value, last_scar_id)
+        """
         if not os.path.exists(self.path):
             return 0, 0, None
             
@@ -65,7 +65,7 @@ class AccumulatorWAL:
             content = await f.read()
             
         lines = content.strip().split('\n')
-        # Пропускаем комментарии
+        # Skip comments
         data_lines = [l for l in lines if l and not l.startswith('#')]
         
         if not data_lines:

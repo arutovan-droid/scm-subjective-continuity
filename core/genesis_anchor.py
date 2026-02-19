@@ -1,16 +1,15 @@
-\"\"\"
-Genesis Anchor — точка рождения системы.
-Фиксируется один раз при первом запуске в TEE.
-\"\"\"
+"""
+Genesis Anchor — system birth point.
+Fixed once at first run in TEE.
+"""
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Optional
 
 
 @dataclass(frozen=True)
 class GenesisAnchor:
-    \"\"\"Генезис-якорь системы.\"\"\"
+    """System genesis anchor."""
     hash: str
     timestamp: str
     attestation: Optional[str] = None
