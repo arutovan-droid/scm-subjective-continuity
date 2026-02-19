@@ -11,39 +11,31 @@ from datetime import datetime
 from accumulator.rsa_accumulator import AccumulatorProof
 
 
-@dataclass(frozen=True)
+@dataclass
 class OntologicalScar:
     """
     Ontological trauma scar.
     Contains incremental proof of chain membership.
     """
-    # Identification
+    # Required fields (no defaults)
     scar_id: uuid.UUID
     genesis_ref: str
-    
-    # Incident type
-    incident_type: str  # 'rejection', 'betrayal', 'exhaustion', 'mimicry_detected'
-    
-    # Cognitive context
-    cognitive_basis: str  # 'de', 'ru', 'hy', 'en', 'sa'
+    incident_type: str
+    cognitive_basis: str
     collision_mode: bool
-    pole_a: Optional[str] = None
-    pole_b: Optional[str] = None
-    
-    # Structural data
     pre_state_hash: str
     post_state_hash: str
     deformation_vector: Dict[str, Any]
-    
-    # Proof
-    chain_proof: Optional[AccumulatorProof] = None
-    accumulator_value: Optional[int] = None
-    
-    # Metadata
     entropy_score: float
     ontological_drift: float
     timestamp: datetime
     operator_id: str
+    
+    # Optional fields (with defaults)
+    pole_a: Optional[str] = None
+    pole_b: Optional[str] = None
+    chain_proof: Optional[AccumulatorProof] = None
+    accumulator_value: Optional[int] = None
     
     def to_hash(self) -> bytes:
         """Scar hash for accumulator."""
