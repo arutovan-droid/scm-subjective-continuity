@@ -28,7 +28,7 @@ class IncrementalChainProof:
         
     async def add_scar(self, scar_hash: bytes) -> AccumulatorProof:
         """Add scar and return proof."""
-        _, proof = await self.accumulator.add(scar_hash)
+        value, proof = await self.accumulator.add(scar_hash)
         self.proofs.append(proof)
         return proof
         
@@ -41,8 +41,13 @@ class IncrementalChainProof:
             if not self.proofs:
                 return True
             latest_proof = self.proofs[-1]
+        
+        # Verify the latest proof
+        if not self.accumulator.verify(latest_proof):
+            return False
             
-        return self.accumulator.verify(latest_proof)
+        # Also verify that accumulator value matches
+        return latest_proof.accumulator == self.accumulator.value
         
     def get_state_proof(self) -> Optional[AccumulatorProof]:
         """Return proof of current state."""
