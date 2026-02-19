@@ -31,6 +31,15 @@ class BlackStoneMode:
     _ite_halt_callback: Optional[Callable[[], Awaitable[None]]] = None
     _ecl_silence_callback: Optional[Callable[[], Awaitable[None]]] = None
     
+    # For testing
+    _test_mode = False
+    _test_wait_override = None
+    
+    @classmethod
+    def set_test_mode(cls, enabled: bool = True):
+        """Enable test mode to avoid infinite waits."""
+        cls._test_mode = enabled
+        
     @classmethod
     def register_chain(cls, callback: Callable[[str, str], Awaitable[None]]):
         """Register callback for ChainRepository."""
@@ -79,8 +88,9 @@ class BlackStoneMode:
         if cls._chain_callback:
             await cls._chain_callback(f"BLACKSTONE:{reason}:{scar_id}")
             
-        # 4. Wait for operator indefinitely
-        await cls._wait_for_operator()
+        # 4. Wait for operator (skip in test mode)
+        if not cls._test_mode:
+            await cls._wait_for_operator()
         
     @classmethod
     async def _wait_for_operator(cls):
