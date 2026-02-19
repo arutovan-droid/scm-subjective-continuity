@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: scm_postgres
+    environment:
+      POSTGRES_USER: scm
+      POSTGRES_PASSWORD: scm_dev_password
+      POSTGRES_DB: scm_chain
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - scm_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: scm_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - scm_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Опционально: adminer для просмотра БД
+  adminer:
+    image: adminer
+    container_name: scm_adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - scm_network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+networks:
+  scm_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
