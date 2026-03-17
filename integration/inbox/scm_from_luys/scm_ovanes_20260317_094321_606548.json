@@ -1,0 +1,57 @@
+{
+  "operator_id": "ovanes",
+  "session_id": "test-core-bridge-1",
+  "state_vector": {
+    "state_vector_profile": {
+      "affective_density": 0.6,
+      "relational_pull": 1.0,
+      "delegation": 0.15,
+      "craft_pull": 0.1,
+      "compression": 0.55
+    },
+    "interpretation": "Input mapped as force geometry rather than waste.",
+    "state_vector_type": "collapsed-force vector",
+    "force_lines": [
+      "compressed-state",
+      "contact-seeking",
+      "affectively-charged"
+    ]
+  },
+  "latent_tension": "схлопывание против артикуляции",
+  "causal_mirror": {
+    "mirror_lines": [
+      "If you freeze inside this state, your available movement shrinks.",
+      "The cost is not moral failure but a reduction of acting power."
+    ],
+    "predicted_subject_cost": "Further narrowing of inner movement and reduction of available next steps.",
+    "action_vector": "collapse-withdrawal",
+    "predicted_continuity_effect": "Continuity becomes thinner and more fragmented if collapse is treated as final truth.",
+    "predicted_power_delta": -0.35
+  },
+  "laetitia_index": {
+    "continuity_gain": 0.7775,
+    "interpretation": "Laetitia measures whether the dyad gained acting power, continuity, participation, and recoverable form.",
+    "total": 0.695,
+    "co_thinking_gain": 0.735,
+    "agency_gain": 0.75,
+    "participatory_increase": 0.46,
+    "power_expansion": 0.7542,
+    "form_recovery": 0.6925
+  },
+  "scm_handoff": {
+    "handoff_reason": "resonance_detected",
+    "continuity_hook": "схлопывание, открытое в мыслимый следующий ход",
+    "scm_payload": {
+      "operator_id": "ovanes",
+      "session_id": "test-core-bridge-1"
+    },
+    "handoff_target": "SCM"
+  },
+  "continuity_event": {
+    "operator_id": "ovanes",
+    "session_id": "test-core-bridge-1",
+    "event_type": "resonance_candidate_detected"
+  },
+  "source_event_type": "alchemist.ingress.transmuted",
+  "source_module": "LUYS.Alchemist"
+}
